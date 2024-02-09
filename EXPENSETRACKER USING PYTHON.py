@@ -19,8 +19,8 @@ class ExpenseTrackerApp(tk.Tk):
         self.category_var = tk.StringVar(self)
         self.category_var.set(self.categories[0])
         self.create_widgets()
-        def create_widgets(self):
-            self.label = tk.Label(
+    def create_widgets(self):
+        self.label = tk.Label(
             self, text="Expense Tracker", font=("Helvetica", 20, "bold")
         )
         self.label.pack(pady=10)
@@ -109,8 +109,8 @@ class ExpenseTrackerApp(tk.Tk):
         else:
             messagebox.showwarning("Warning", "Expense and Date cannot be empty.")
         self.update_total_label()
-        def edit_expense(self):
-            selected_index = self.expense_listbox.curselection()
+    def edit_expense(self):
+        selected_index = self.expense_listbox.curselection()
         if selected_index:
             selected_index = selected_index[0]
             selected_expense = self.expenses[selected_index]
@@ -126,22 +126,21 @@ class ExpenseTrackerApp(tk.Tk):
                 )
                 self.refresh_list()
                 self.update_total_label()
-                def delete_expense(self):
-                    selected_index = self.expense_listbox.curselection()
+        def delete_expense(self):
+            selected_index = self.expense_listbox.curselection()
         if selected_index:
             selected_index = selected_index[0]
             del self.expenses[selected_index]
             self.expense_listbox.delete(selected_index)
             self.update_total_label()
-            def refresh_list(self):
-                self.expense_listbox.delete(0, tk.END)
+        def refresh_list(self):
+            self.expense_listbox.delete(0, tk.END)
         for expense, item, category, date in self.expenses:
             self.expense_listbox.insert(
-                tk.END, f"{expense} - {item} - {category} ({date})"
-            )
-            def update_total_label(self):
-                total_expenses = sum(float(expense[0]) for expense in self.expenses)
-                self.total_label.config(text=f"Total Expenses: USD {total_expenses:.2f}")
+                tk.END, f"{expense} - {item} - {category} ({date})")
+    def update_total_label(self):
+        total_expenses = sum(float(expense[0]) for expense in self.expenses)
+        self.total_label.config(text=f"Total Expenses: USD {total_expenses:.2f}")
 
     def save_expenses(self):
         with open("expenses.csv", "w", newline="") as csvfile:
@@ -150,12 +149,24 @@ class ExpenseTrackerApp(tk.Tk):
             writer.writerow(column_headers)
             for expense in self.expenses:
                 writer.writerow(expense)
-                def show_expenses_chart(self):
-                    category_totals = {}
+
+    def show_expenses_chart(self):
+        category_totals = {}
         for expense, _, category, _ in self.expenses:
             try:
                 amount = float(expense)
             except ValueError:
                 continue
-                category_totals[category] = category_totals.get(category, 0) + amount
-                
+            category_totals[category] = category_totals.get(category, 0) + amount
+        categories = list(category_totals.keys())
+        expenses = list(category_totals.values())
+        plt.figure(figsize=(8, 6))
+        plt.pie(
+            expenses, labels=categories, autopct="%1.1f%%", startangle=140, shadow=True
+        )
+        plt.axis("equal")
+        plt.title(f"Expense Categories Distribution (USD)")
+        plt.show()
+        if __name__ == "__main__":
+            app = ExpenseTrackerApp()
+            app.mainloop()
